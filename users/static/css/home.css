@@ -1,0 +1,33 @@
+.user_profile {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user_container {
+    background-color: var(--gray-light);
+    width: 90%;
+    height: fit-content;
+    border-radius: 0.8rem;
+    padding: 2rem;
+}
+
+.user_avatar {
+    width: 130px;
+    margin: 0 auto;
+}
+
+.user_avatar img {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    padding: 0.5rem;
+    border: solid 3px var(--white);
+    margin-bottom: 2rem;
+}
+
+.user_infos {
+    text-align: center;
+    color: var(--dark);
+}

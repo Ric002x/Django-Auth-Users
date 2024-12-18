@@ -1,0 +1,31 @@
+{% extends "global/base.html" %}
+{% load static %}
+
+{% block body_content %}
+<main class="users">
+
+    <div class="background-img">
+        <img src="{% static "assets/background.jpg" %}" alt="">
+    </div>
+
+    <form action="{{form_action}}" method="post" class="auth_form">
+        {% csrf_token %}
+        <h1>Cadastro</h1>
+
+        {% for field in form %}
+            <div class="form_field">
+                <label for="{{field.id_for_label}}">
+                    {{field.label}}
+                </label>
+                {{field}}
+                {{field.errors}}
+            </div>
+        {% endfor %}
+
+        <button type="submit">Cadastrar-se</button>
+
+        <p>Já possui conta? <a href="{% url "users:login_view" %}">Faça login</a></p>
+    </form>
+        
+</main>
+{% endblock body_content %}

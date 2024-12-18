@@ -1,0 +1,17 @@
+{% extends "global/base.html" %}
+
+{% block body_content %}
+
+<main class="user_profile">
+    <div class="user_container">
+        <div class="user_avatar">
+            <img src="{{request.user.avatar}}" alt="">
+        </div>
+        <div class="user_infos">
+            <h1>{{request.user.name}}</h1>
+            <p>{{request.user.email}}</p>
+        </div>
+    </div>
+</main>
+
+{% endblock body_content %}
