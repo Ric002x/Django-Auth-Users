@@ -1,0 +1,18 @@
+{% if not auth_page %}
+
+<header class="main_header">
+
+<div class="header_container">
+    <div class="logo"></div>
+    <div class="logout">
+        <form action="{% url "users:logout" %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{request.user.email}}">
+            <button type="submit">Sair</button>
+        </form>
+    </div>
+</div>
+
+</header>
+
+{% endif %}

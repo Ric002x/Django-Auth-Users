@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuthAccess</title>
+    <link rel="stylesheet" href="{% static "global/css/base.css" %}">
+    <link rel="stylesheet" href="{% static "css/base_users.css" %}">
+</head>
+<body>
+    {% include "global/partials/header.html" %}
+
+    <div class="message">
+        {% for message in messages %}
+            {{message}}
+        {% endfor %}
+    </div>
+
+    {% block body_content %}{% endblock body_content %}
+</body>
+</html>
