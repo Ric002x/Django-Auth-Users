@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ValidationError
 from django.core.files.storage import FileSystemStorage
 from django.http import Http404
 from django.shortcuts import redirect, render
@@ -103,6 +102,7 @@ def update_profile(request):
     if request.method == "POST":
         form = UpdateUserForm(
             data=request.POST or None,
+            files=request.FILES or None,
             instance=request.user
         )
 
@@ -117,13 +117,7 @@ def update_profile(request):
             avatar = request.FILES.get('avatar')
 
             if avatar:
-                content_type = avatar.content_type
                 extension = avatar.name.split('.')[-1]
-
-                if not content_type not in ["img/png", "img/jpeg"]:
-                    raise ValidationError(
-                        "Somente arquivos do tipo PNG e JPEG são suportados"
-                    )
 
                 file = storage.save(f"{uuid.uuid4()}.{extension}", avatar)
                 avatar = storage.url(file)

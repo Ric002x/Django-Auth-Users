@@ -84,6 +84,7 @@ class UpdateUserValidator:
 
     def execute_clean(self, *args, **kwargs):
         self.clean_email()
+        self.clean_avatar()
 
         for key, value in self.data.items():
             if key != "avatar" and not self.data.get(key):
@@ -104,3 +105,20 @@ class UpdateUserValidator:
             self.errors['email'].append(self.ErrorClass(
                 "Já existe um usuário cadastrado para esse email"
             ))
+
+    def clean_avatar(self, *args, **kwargs):
+        avatar = self.data.get('avatar')
+
+        if avatar:
+            size = avatar.size
+            content_type = avatar.content_type
+
+            if content_type not in ["image/png", "image/jpeg"]:
+                self.errors['avatar'].append(self.ErrorClass(
+                    "Somente arquivos do tipo PNG e JPEG são suportados"
+                ))
+
+            if size > 10485760:
+                self.errors['avatar'].append(self.ErrorClass(
+                    "O limite máximo de tamanho de arquivo é de 10MB"
+                ))

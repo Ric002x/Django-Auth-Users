@@ -18,4 +18,4 @@ class UpdateUserForm(forms.ModelForm):
         fields = ["id", "name", 'email', 'avatar']
 
     def clean(self, *args, **kwargs):
-        UpdateUserValidator(self.data)
+        UpdateUserValidator(self.cleaned_data)

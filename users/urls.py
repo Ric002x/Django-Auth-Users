@@ -7,11 +7,11 @@ app_name = "users"
 urlpatterns = [
     path("", views.profile, name="profile"),
 
-    path("cadastro", views.register, name="register"),
+    path("register", views.register, name="register"),
 
-    path('entrar', views.login_, name="login"),
+    path("login", views.login_, name="login"),
 
-    path("sair", views.logout_execute, name="logout"),
+    path("logout", views.logout_execute, name="logout"),
 
-    path("atualizar", views.update_profile, name="update_profile"),
+    path("update", views.update_profile, name="update_profile"),
 ]
