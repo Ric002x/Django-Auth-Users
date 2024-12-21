@@ -9,10 +9,9 @@ urlpatterns = [
 
     path("cadastro", views.register, name="register"),
 
-    path('logar', views.login_view, name="login_view"),
-    path('logar/criar', views.login_create, name="login_create"),
+    path('entrar', views.login_, name="login"),
 
-    path("logout/", views.logout_execute, name="logout"),
+    path("sair", views.logout_execute, name="logout"),
 
     path("atualizar", views.update_profile, name="update_profile"),
 ]

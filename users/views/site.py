@@ -15,7 +15,7 @@ from users.forms import LoginForm, RegisterForm, UpdateUserForm
 
 def profile(request):
     if not request.user.is_authenticated:
-        return redirect('users:login_view')
+        return redirect('users:login')
 
     return render(request, "home.html")
 
@@ -32,7 +32,7 @@ def register(request):
             user.set_password(form.cleaned_data['password'])
             user.save()
             messages.success(request, "Usuário Criado!")
-            return redirect("users:login_view")
+            return redirect("users:login")
         else:
             messages.error(request, "Falha no Cadastro")
             return render(request, "auth/register.html", {
@@ -50,40 +50,41 @@ def register(request):
     })
 
 
-def login_view(request):
+def login_(request):
     if request.user.is_authenticated:
         return redirect('users:profile')
+
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+
+        if form.is_valid():
+            authenticated_user = authenticate(
+                email=form.data.get('email', ''),
+                password=form.data.get('password', ''),
+            )
+
+            if authenticated_user is not None:
+                messages.success(request, "Usuário Logado")
+                login(request, authenticated_user)
+                return redirect("users:profile")
+
+        else:
+            messages.error(request, "Erro no Login")
+            return render(request, "auth/login.html", {
+                "form": form,
+                "form_action": reverse("users:login"),
+                "auth_page": True
+            })
 
     form = LoginForm()
     return render(request, "auth/login.html", {
         "form": form,
-        "form_action": reverse("users:login_create"),
+        "form_action": reverse("users:login"),
         "auth_page": True
     })
 
 
-def login_create(request):
-    if not request.POST:
-        raise Http404
-
-    form = LoginForm(request.POST)
-
-    if form.is_valid():
-        authenticated_user = authenticate(
-            email=form.data.get('email', ''),
-            password=form.data.get('password', ''),
-        )
-
-        if authenticated_user is not None:
-            messages.success(request, "Usuário Logado")
-            login(request, authenticated_user)
-            return redirect("users:profile")
-
-    messages.error(request, "Erro no Login")
-    return redirect("users:login_view")
-
-
-@login_required(login_url="users:login_view", redirect_field_name="next")
+@login_required(login_url="users:login", redirect_field_name="next")
 def logout_execute(request):
     if not request.POST:
         raise Http404
@@ -94,10 +95,10 @@ def logout_execute(request):
 
     logout(request)
     messages.success(request, "Logout realizado")
-    return redirect("users:login_view")
+    return redirect("users:login")
 
 
-@login_required(login_url="users:login_view", redirect_field_name="next")
+@login_required(login_url="users:login", redirect_field_name="next")
 def update_profile(request):
     if request.method == "POST":
         form = UpdateUserForm(
