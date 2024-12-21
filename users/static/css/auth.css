@@ -23,8 +23,8 @@
     width: 300px;
     border: solid 2px #ccc;
     padding: 4rem 2rem;
-    backdrop-filter: blur(15px);
-    background-color: #ffffff1b;
+    backdrop-filter: blur(25px);
+    background-color: #ffffff23;
     border-radius: 0.3rem;
 }
 
@@ -38,26 +38,6 @@
 .auth_form .form_field {
     margin: 2.8rem 0;
 }
-
-/* .auth_form label {
-    font-size: 14px;
-    display: block;
-    color: #fff;
-    font-weight: 500;
-    margin-bottom: 5px;
-} */
-
-/* .auth_form input {
-    background-color: transparent;
-    border: none;
-    border-bottom: solid 2px #ccc;
-    height: 2.5rem;
-    width: 100%;
-    outline: none;
-    font-size: 12px;
-    padding-left: 0.5rem;
-    color: #fff;
-} */
 
 .auth_form input {
     background-color: transparent;

@@ -6,12 +6,14 @@ from users.validators import RegisterUserValidator
 
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(
-        label="Senha",
-        widget=forms.PasswordInput()
+        widget=forms.PasswordInput(attrs={
+            "placeholder": "Senha"
+        })
     )
     password2 = forms.CharField(
-        label='Repetir Senha',
-        widget=forms.PasswordInput()
+        widget=forms.PasswordInput(attrs={
+            "placeholder": "Repitir sua Senha"
+        })
     )
 
     class Meta:
@@ -20,10 +22,9 @@ class RegisterForm(forms.ModelForm):
             'name', 'email', 'password', 'password2'
         ]
 
-        labels = {
-            'name': "Nome",
-            'email': "E-mail",
-            'password': "Senha",
+        widgets = {
+            "name": forms.TextInput(attrs={"placeholder": "Nome"}),
+            "email": forms.EmailInput(attrs={"placeholder": "E-mail"}),
         }
 
     def clean(self, *args, **kwargs):
