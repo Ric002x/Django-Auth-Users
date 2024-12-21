@@ -18,7 +18,8 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     name = models.CharField(max_length=80)
     email = models.EmailField(unique=True)
-    avatar = models.TextField(default='/media/avatars/default_avatar.png')
+    avatar = models.TextField(
+        default='/media/users/avatars/default_avatar.png')
     is_superuser = models.BooleanField(default=False)
     last_access = models.DateTimeField(auto_now_add=True)
 

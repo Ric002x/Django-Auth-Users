@@ -73,3 +73,34 @@ class LoginUserValidator:
             raise self.ErrorClass(
                 self.errors  # type: ignore
             )
+
+
+class UpdateUserValidator:
+    def __init__(self, data, errors=None, ErrorClass=None):
+        self.data: dict = data
+        self.errors = defaultdict(list) if errors is None else errors
+        self.ErrorClass = ValidationError if ErrorClass is None else ErrorClass
+        self.execute_clean()
+
+    def execute_clean(self, *args, **kwargs):
+        self.clean_email()
+
+        for key, value in self.data.items():
+            if key != "avatar" and not self.data.get(key):
+                self.errors[key].append(self.ErrorClass(
+                    "Este campo é obrigatório"
+                ))
+
+        if self.errors:
+            raise self.ErrorClass(self.errors)  # type: ignore
+
+    def clean_email(self, *args, **kwargs):
+        email = self.data.get('email')
+        user_id = self.data.get('id')
+
+        existing_user = User.objects.filter(
+            email=email).exclude(id=user_id).first()
+        if existing_user:
+            self.errors['email'].append(self.ErrorClass(
+                "Já existe um usuário cadastrado para esse email"
+            ))
