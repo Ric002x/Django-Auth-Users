@@ -13,4 +13,6 @@ urlpatterns = [
     path('logar/criar', views.login_create, name="login_create"),
 
     path("logout/", views.logout_execute, name="logout"),
+
+    path("atualizar", views.update_profile, name="update_profile"),
 ]
