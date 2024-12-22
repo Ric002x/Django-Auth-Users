@@ -17,21 +17,34 @@ class RegisterUserValidator:
         regex = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[1-9]).{8,}$')
 
         if not regex.match(password):
-            self.errors['password'].append(self.ErrorClass(
+            self.errors['password'].append(
                 'A senha deve contar pelo menos 8 caracteres, '
                 'incluindo letras maiúsculas e números',
-                code='invalid',
-            ))
+            )
 
     def execute_clean(self, *args, **kwargs):
+        if not self.data.get('name'):
+            self.errors['name'].append(
+                "Este campo é obrigatório"
+            )
+        if not self.data.get('email'):
+            self.errors['email'].append(
+                "Este campo é obrigatório"
+            )
+        if not self.data.get('password'):
+            self.errors['password'].append(
+                "Este campo é obrigatório"
+            )
+        if not self.data.get('repeat_password'):
+            self.errors['repeat_password'].append(
+                "Este campo é obrigatório"
+            )
+
+        if self.errors:
+            raise self.ErrorClass(self.errors)  # type: ignore
+
         self.clean_email()
         self.clean_password()
-
-        for key, value in self.data.items():
-            if key != "avatar" and not self.data.get(key):
-                self.errors[key].append(self.ErrorClass(
-                    "Este campo é obrigatório"
-                ))
 
         if self.errors:
             raise self.ErrorClass(self.errors)  # type: ignore
@@ -40,20 +53,20 @@ class RegisterUserValidator:
         email = self.data.get('email')
 
         if User.objects.filter(email=email).exists():
-            self.errors['email'].append(self.ErrorClass(
+            self.errors['email'].append(
                 "Já existe um usuário cadastrado para esse email"
-            ))
+            )
 
     def clean_password(self, *args, **kwargs):
         password = self.data.get('password')
-        password2 = self.data.get('password2')
+        password2 = self.data.get('repeat_password')
 
         self.strong_password(password)
 
         if password != password2:
-            self.errors['password'].append(self.ErrorClass(
+            self.errors['password'].append(
                 "As senhas não coincidem"
-            ))
+            )
 
 
 class LoginUserValidator:
@@ -61,13 +74,20 @@ class LoginUserValidator:
         self.data: dict = data
         self.errors = defaultdict(list) if errors is None else errors
         self.ErrorClass = ValidationError if ErrorClass is None else ErrorClass
+        self.execute_clean()
 
     def execute_clean(self, *args, **kwargs):
-        for key, value in self.data.items():
-            if not self.data[key]:
-                self.errors[key].append(self.ErrorClass(
-                    "Preencha este campo"
-                ))
+        email = self.data.get('email')
+        password = self.data.get('password')
+
+        if not email:
+            self.errors['email'].append(
+                "Preencha os campos"
+            )
+        if not password:
+            self.errors['password'].append(
+                "Preencha os campos"
+            )
 
         if self.errors:
             raise self.ErrorClass(
@@ -75,25 +95,12 @@ class LoginUserValidator:
             )
 
 
-class UpdateUserValidator:
-    def __init__(self, data, errors=None, ErrorClass=None):
-        self.data: dict = data
-        self.errors = defaultdict(list) if errors is None else errors
-        self.ErrorClass = ValidationError if ErrorClass is None else ErrorClass
-        self.execute_clean()
+class UpdateUserValidator(RegisterUserValidator):
 
     def execute_clean(self, *args, **kwargs):
-        self.clean_email()
+        super_clean = super().execute_clean(*args, **kwargs)
         self.clean_avatar()
-
-        for key, value in self.data.items():
-            if key != "avatar" and not self.data.get(key):
-                self.errors[key].append(self.ErrorClass(
-                    "Este campo é obrigatório"
-                ))
-
-        if self.errors:
-            raise self.ErrorClass(self.errors)  # type: ignore
+        return super_clean
 
     def clean_email(self, *args, **kwargs):
         email = self.data.get('email')
