@@ -7,7 +7,7 @@ from users.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", 'avatar', "name", "email"]
+        fields = ["id", 'avatar', "name", "email", "last_access"]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
