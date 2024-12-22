@@ -1,3 +1,4 @@
-.update_user {
-    margin-top: 64px;
+.users .update_password {
+    text-decoration: none;
+    color: rgb(228, 116, 228);
 }
