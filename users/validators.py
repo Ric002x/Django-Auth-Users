@@ -122,3 +122,44 @@ class UpdateUserValidator:
                 self.errors['avatar'].append(self.ErrorClass(
                     "O limite máximo de tamanho de arquivo é de 10MB"
                 ))
+
+
+class UpdatePasswordValidator:
+    def __init__(self, data, errors=None, ErrorClass=None):
+        self.data: dict = data
+        self.errors = defaultdict(list) if errors is None else errors
+        self.ErrorClass = ValidationError if ErrorClass is None else ErrorClass
+        self.execute_clean()
+
+    def strong_password(self, password):
+        regex = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[1-9]).{8,}$')
+
+        if not regex.match(password):
+            self.errors['new_password'].append(self.ErrorClass(
+                'A senha deve contar pelo menos 8 caracteres, '
+                'incluindo letras maiúsculas e números',
+                code='invalid',
+            ))
+
+    def execute_clean(self, *args, **kwargs):
+        self.clean_password()
+
+        for key, value in self.data.items():
+            if not self.data.get(key):
+                self.errors[key].append(self.ErrorClass(
+                    "Este campo é obrigatório"
+                ))
+
+        if self.errors:
+            raise self.ErrorClass(self.errors)  # type: ignore
+
+    def clean_password(self, *args, **kwargs):
+        new_password = self.data.get('new_password')
+        repeat_password = self.data.get('repeat_password')
+
+        self.strong_password(new_password)
+
+        if new_password != repeat_password:
+            self.errors['new_password'].append(self.ErrorClass(
+                "As senhas não coincidem"
+            ))
