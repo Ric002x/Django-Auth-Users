@@ -2,14 +2,17 @@ import uuid
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import (authenticate, login, logout,
+                                 update_session_auth_hash)
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
 from django.core.files.storage import FileSystemStorage
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from users.forms import LoginForm, RegisterForm, UpdateUserForm
+from users.forms import (LoginForm, RegisterForm, UpdatePasswordForm,
+                         UpdateUserForm)
 
 
 def profile(request):
@@ -145,4 +148,36 @@ def update_profile(request):
     return render(request, "user/update_user.html", {
         "form": form,
         "form_action": reverse("users:update_profile")
+    })
+
+
+@login_required(login_url="users:login", redirect_field_name="next")
+def update_password(request):
+    if request.method == "POST":
+        form = UpdatePasswordForm(request.POST)
+
+        if form.is_valid():
+            user = request.user
+            old_password = form.data.get('old_password')
+            new_password = form.data.get('new_password')
+
+            if user and check_password(old_password, user.password):
+                user.set_password(new_password)
+                user.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Senha alterada")
+                return redirect(reverse("users:profile"))
+            else:
+                messages.error(request, "Senha incorreta")
+                return redirect(reverse("users:update_password"))
+        else:
+            return render(request, "user/update_password.html", {
+                'form': form,
+                'form_action': reverse("users:update_password")
+            })
+
+    form = UpdatePasswordForm()
+    return render(request, "user/update_password.html", {
+        'form': form,
+        'form_action': reverse("users:update_password")
     })

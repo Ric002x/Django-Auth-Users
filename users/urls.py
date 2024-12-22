@@ -14,4 +14,6 @@ urlpatterns = [
     path("logout", views.logout_execute, name="logout"),
 
     path("update", views.update_profile, name="update_profile"),
+
+    path('password', views.update_password, name="update_password")
 ]
