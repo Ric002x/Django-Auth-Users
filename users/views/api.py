@@ -14,7 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import User
 from users.serializers import UserSerializer
 from users.validators import (LoginUserValidator, RegisterUserValidator,
-                              UpdateUserValidator)
+                              UpdatePasswordValidator, UpdateUserValidator)
 
 
 class CreateUserAPIView(APIView):
@@ -127,3 +127,26 @@ class UserAPIView(APIView):
         return Response({
             "user": serializer.data
         })
+
+
+class UserChangePasswordAPIView(APIView):
+    def put(self, request):
+        data = {
+            "old_password": request.data.get('old_password'),
+            "new_password": request.data.get('new_password'),
+            "repeat_password": request.data.get('repeat_password'),
+        }
+
+        UpdatePasswordValidator(data, ErrorClass=ValidationError)
+
+        user = request.user
+
+        if user and check_password(data.get('old_password'), user.password):
+            user.set_password(data.get('new_password'))
+            user.save()
+
+            return Response({
+                "success": True
+            })
+
+        raise AuthenticationFailed
