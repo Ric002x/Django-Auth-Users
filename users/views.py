@@ -1,4 +1,5 @@
 import uuid
+from random import randint
 
 from django.conf import settings
 from django.contrib.auth.hashers import check_password
@@ -29,9 +30,13 @@ class CreateUserAPIView(APIView):
         }
         RegisterUserValidator(data, ErrorClass=ValidationError)
 
+        username = str(data.get('name')).split(
+            ' ')[0] + str(randint(1000000, 9999999))
+
         user = User(
             name=data.get('name'),
-            email=data.get('email')
+            email=data.get('email'),
+            username=username
         )
         user.set_password(data.get('password'))
         user.save()
@@ -88,6 +93,7 @@ class UserAPIView(APIView):
             "id": request.user.id,
             "name": request.data.get('name', ''),
             "email": request.data.get('email', ''),
+            "username": request.data.get('username', ''),
             "avatar": avatar
         }
 
@@ -106,6 +112,7 @@ class UserAPIView(APIView):
         serializer = UserSerializer(request.user, data={
             "name": data.get('name'),
             "email": data.get('email'),
+            "username": data.get('username'),
             "avatar": avatar or request.user.avatar,
         })
 
@@ -149,4 +156,6 @@ class UserChangePasswordAPIView(APIView):
                 "success": True
             })
 
-        raise AuthenticationFailed
+        raise ValidationError({
+            "old_password": "Senha incorreta"
+        })

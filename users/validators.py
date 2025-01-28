@@ -90,7 +90,8 @@ class LoginUserValidator:
 class UpdateUserValidator(RegisterUserValidator):
 
     def execute_clean(self, *args, **kwargs):
-        self.fields = ['name', 'email']
+        self.fields = ['username', 'name', 'email']
+        self.clean_username()
         return super().execute_clean(*args, **kwargs)
 
     def clean_email(self, *args, **kwargs):
@@ -120,6 +121,17 @@ class UpdateUserValidator(RegisterUserValidator):
                 self.errors['avatar'].append(
                     "O limite máximo de tamanho de arquivo é de 10MB"
                 )
+
+    def clean_username(self, *args, **kwargs):
+        username = self.data.get('username')
+        user_id = self.data.get('id')
+
+        existing_user = User.objects.filter(
+            username=username).exclude(id=user_id).first()
+        if existing_user:
+            self.errors['username'].append(
+                "Nome de usuário já se encontra em uso"
+            )
 
     def clean_password(self, *args, **kwargs):
         return None

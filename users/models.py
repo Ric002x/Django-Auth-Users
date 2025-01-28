@@ -17,6 +17,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     name = models.CharField(max_length=80)
+    username = models.CharField(max_length=20, unique=True)
     email = models.EmailField(unique=True)
     avatar = models.TextField(
         default='/media/users/avatars/default_avatar.png')
