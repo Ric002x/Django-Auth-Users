@@ -159,3 +159,32 @@ class UserChangePasswordAPIView(APIView):
         raise ValidationError({
             "old_password": "Senha incorreta"
         })
+
+
+# OAuth Views
+
+class OAuthLogin(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        data: dict = request.data
+
+        user = User.objects.filter(email=data.get('email')).first()
+
+        if not user:
+            user = User(
+                name=data.get('name'),
+                email=data.get('email'),
+                avatar=data.get('picture'),
+            )
+            user.save()
+
+        user_serializer = UserSerializer(user).data
+        access_token = RefreshToken.for_user(
+            user
+        ).access_token  # type: ignore
+
+        return Response({
+            "user": user_serializer,
+            "access_token": str(access_token)
+        })
